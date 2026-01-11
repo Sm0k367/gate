@@ -4,9 +4,9 @@
 const followers = [
     "@threejs", "@mrdoob", "@Vercel", "@p01", "@Anemone_Eth", 
     "@Rainmaker1973", "@Future_Explore", "@CyberpunkGame", 
-    "@OpenFreeAI", "@Design_Critique", "@Framer", 
-    // Add the rest of your followers here...
-    "@Follower_1", "@Follower_2", "@Follower_3" 
+    "@OpenFreeAI", "@Design_Critique", "@Framer",
+    "@zandyor", "@BradPorcellato", "@Cat5SMASHICANE", "@dotwhacksketchy", 
+    "@StarKllrr", "@LordOfFuckery", "@TonyaKBrandon", "@itsjuliusolson"
 ];
 
 let audioContext, analyzer, dataArray, source, audio;
