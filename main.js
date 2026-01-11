@@ -1,17 +1,23 @@
-// --- EPIC TECH AI // THE ARCHITECTS // CINEMATIC GLIDE ---
+// --- EPIC TECH AI // THE COLLECTIVE // MASS-FOLLOWER ENGINE ---
+
+// 1. THE ROSTER: Add all your verified followers here in quotes separated by commas.
+const followers = [
+    "@threejs", "@mrdoob", "@Vercel", "@p01", "@Anemone_Eth", 
+    "@Rainmaker1973", "@Future_Explore", "@CyberpunkGame", 
+    "@OpenFreeAI", "@Design_Critique", "@Framer", 
+    // Add the rest of your followers here...
+    "@Follower_1", "@Follower_2", "@Follower_3" 
+];
+
 let audioContext, analyzer, dataArray, source, audio;
 let isPlaying = false;
 let progress = 0;
+const velocity = 0.00012; // Slow cinematic glide
 
-// THE VELOCITY: Reduced by 70% for a smooth, readable flow
-const velocity = 0.00015; 
-
-// --- THREE.JS FOUNDATION ---
 const scene = new THREE.Scene();
-// Deep atmosphere instead of pure black
 scene.fog = new THREE.FogExp2(0x0a1012, 0.02);
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ 
     canvas: document.getElementById('tribute-canvas'), 
     antialias: true 
@@ -19,81 +25,68 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// 1. THE ARCHITECTS (The Heavy Hitters)
-const hitters = [
-    "@threejs", "@mrdoob", "@Vercel", "@p01", 
-    "@Anemone_Eth", "@Rainmaker1973", "@Future_Explore", 
-    "@CyberpunkGame", "@OpenFreeAI", "@Design_Critique", "@Framer"
-];
-
-// 2. THE PATH (Extended for more space between names)
+// 2. THE PATH (Extended for the crowd)
 const points = [];
-for (let i = 0; i <= 20; i++) {
+const pathSegments = Math.max(20, followers.length); // Scales path length to follower count
+for (let i = 0; i <= pathSegments; i++) {
     points.push(new THREE.Vector3(
-        Math.sin(i * 0.4) * 20, 
-        Math.cos(i * 0.3) * 20, 
-        i * 60 // Spacing stretched out
+        Math.sin(i * 0.4) * 25, 
+        Math.cos(i * 0.3) * 25, 
+        i * 70 
     ));
 }
 const curve = new THREE.CatmullRomCurve3(points);
 curve.closed = true;
 
-// 3. THE TUNNEL (Luminous Architecture)
-const tubeGeom = new THREE.TubeGeometry(curve, 250, 6, 20, true);
+// 3. THE TUNNEL
+const tubeGeom = new THREE.TubeGeometry(curve, pathSegments * 10, 8, 20, true);
 const tubeMat = new THREE.MeshStandardMaterial({
     color: 0x00f2ff,
     emissive: 0x00f2ff,
-    emissiveIntensity: 0.5,
+    emissiveIntensity: 0.4,
     wireframe: true,
     transparent: true,
-    opacity: 0.2,
+    opacity: 0.15,
     side: THREE.BackSide
 });
 const tunnel = new THREE.Mesh(tubeGeom, tubeMat);
 scene.add(tunnel);
 
-// 4. SPATIAL NAMES (Bigger, Brighter, Clearer)
+// 4. GENERATING FOLLOWER SPRITES
 const tagSprites = [];
-hitters.forEach((handle, i) => {
+followers.forEach((handle, i) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 2048; // High resolution for text
-    canvas.height = 512;
+    canvas.width = 1024;
+    canvas.height = 256;
     
-    // Gradient text for that "Holographic" look
-    const grad = ctx.createLinearGradient(0, 0, 2048, 0);
-    grad.addColorStop(0, "#ffffff");
-    grad.addColorStop(0.5, "#00f2ff");
-    grad.addColorStop(1, "#ffffff");
-    
-    ctx.fillStyle = grad;
-    ctx.font = "900 180px Syncopate";
+    ctx.fillStyle = "white";
+    ctx.font = "900 80px Syncopate";
     ctx.textAlign = "center";
-    ctx.shadowColor = "rgba(0, 242, 255, 0.8)";
-    ctx.shadowBlur = 30;
-    ctx.fillText(handle.toUpperCase(), 1024, 256);
+    ctx.shadowColor = "cyan";
+    ctx.shadowBlur = 15;
+    ctx.fillText(handle.toUpperCase(), 512, 128);
     
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
     const sprite = new THREE.Sprite(material);
     
-    // Spread them out significantly
-    const p = i / hitters.length;
+    // Spread them perfectly along the infinite loop
+    const p = i / followers.length;
     const pos = curve.getPointAt(p);
-    sprite.position.copy(pos).add(new THREE.Vector3(0, 2, 0));
-    sprite.scale.set(16, 4, 1);
+    sprite.position.copy(pos).add(new THREE.Vector3(0, 3, 0));
+    sprite.scale.set(12, 3, 1);
     
-    sprite.userData = { handle: handle, threshold: p };
+    sprite.userData = { handle: handle };
     tagSprites.push(sprite);
     scene.add(sprite);
 });
 
-// 5. THE LIGHTING (High Intensity)
-const light = new THREE.PointLight(0xffffff, 80, 100);
+const light = new THREE.PointLight(0xffffff, 100, 150);
 scene.add(light);
-scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+scene.add(new THREE.AmbientLight(0xffffff, 0.1));
 
-// --- AUDIO & LAUNCH ---
+// --- AUDIO LOGIC ---
 const audioInput = document.getElementById('audio-input');
 const launchBtn = document.getElementById('launch-btn');
 
@@ -101,7 +94,7 @@ audioInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
         audio = new Audio(URL.createObjectURL(file));
-        document.getElementById('status-text').innerHTML = `<span class="text-white">STREAM LOADED:</span><br>${file.name.toUpperCase()}`;
+        document.getElementById('status-text').innerHTML = `COLLECTIVE SIGNAL READY`;
         launchBtn.classList.remove('hidden');
     }
 });
@@ -116,7 +109,7 @@ launchBtn.addEventListener('click', async () => {
     analyzer.connect(audioContext.destination);
     dataArray = new Uint8Array(analyzer.frequencyBinCount);
 
-    gsap.to("#setup-overlay", { opacity: 0, scale: 1.1, duration: 2.5, onComplete: () => {
+    gsap.to("#setup-overlay", { opacity: 0, scale: 1.2, duration: 3, onComplete: () => {
         document.getElementById('setup-overlay').style.display = 'none';
         document.getElementById('interface').style.opacity = '1';
         audio.play();
@@ -124,7 +117,7 @@ launchBtn.addEventListener('click', async () => {
     }});
 });
 
-// --- ENGINE LOOP ---
+// --- RENDER LOOP ---
 function animate() {
     requestAnimationFrame(animate);
 
@@ -132,29 +125,23 @@ function animate() {
         analyzer.getByteFrequencyData(dataArray);
         const bass = dataArray[2];
 
-        // Smooth glide with very subtle audio reactivity
-        progress += velocity + (bass * 0.000001);
+        progress += velocity + (bass * 0.0000005);
         if (progress > 1) progress = 0;
 
         const pos = curve.getPointAt(progress);
-        const lookAt = curve.getPointAt((progress + 0.02) % 1);
+        const lookAt = curve.getPointAt((progress + 0.015) % 1);
         camera.position.copy(pos);
         camera.lookAt(lookAt);
         light.position.copy(pos);
 
-        // Update UI Flow
         document.getElementById('hz-display').innerText = `${(bass / 2.55).toFixed(2)}%`;
         
-        // Tag Visibility & HUD Update
         tagSprites.forEach(sprite => {
             const dist = camera.position.distanceTo(sprite.position);
-            
-            // Fade in/out names as you glide past
-            if (dist < 40) {
-                sprite.material.opacity = Math.min(1, (40 - dist) / 15);
-                
-                // When we are closest, update the HUD
-                if (dist < 12) {
+            // Dynamic Visibility: Names appear as you approach and fade as you pass
+            if (dist < 50) {
+                sprite.material.opacity = Math.min(1, (50 - dist) / 20);
+                if (dist < 15) {
                     const tagEl = document.getElementById('active-tag');
                     if (tagEl.innerText !== sprite.userData.handle) {
                         tagEl.innerText = sprite.userData.handle;
@@ -165,10 +152,8 @@ function animate() {
             }
         });
 
-        // Slow color cycle
-        const time = Date.now() * 0.0001;
-        tubeMat.color.setHSL(time % 1, 0.8, 0.5);
-        light.intensity = 60 + (bass / 4);
+        // Slow cinematic color shift
+        tubeMat.color.setHSL((Date.now() * 0.00005) % 1, 0.7, 0.5);
     }
     renderer.render(scene, camera);
 }
